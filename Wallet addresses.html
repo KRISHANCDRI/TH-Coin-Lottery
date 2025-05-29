@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TH COIN Lottery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+  <script src="https://unpkg.com/@solana/spl-token@latest/lib/index.iife.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; text-align: center; padding: 2em; }
+    .box { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 2em; border-radius: 10px; }
+    button { margin: 1em; padding: 1em 2em; font-size: 1em; background: #00ff99; color: #000; border: none; border-radius: 5px; cursor: pointer; }
+    select, input { padding: 0.5em; margin: 1em; }
+  </style>
+</head>
+<body>
+  <h1>🎉 TH COIN Lottery (Devnet)</h1>
+  <div class="box">
+    <p>Join by sending $10 worth of TH COIN</p>
+    <button onclick="connectWallet()">🔌 Connect Phantom Wallet</button>
+    <button onclick="alert('TH COIN transfer logic requires smart contract or backend to manage correctly.')">💸 Pay Entry Fee (Coming Soon)</button>
+    <p id="status"></p>
+  </div>
+</body>
+</html>
