@@ -1,84 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TH COIN Lottery Game</title>
+  <title>TH COIN Lottery</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #121212; color: #ffffff; text-align: center; padding: 2em; }
-    h1 { color: #00ff99; }
-    .lottery-box { margin: 2em auto; padding: 2em; border: 1px solid #00ff99; border-radius: 10px; width: 90%; max-width: 600px; background: #1e1e1e; }
-    button { margin: 1em; padding: 1em 2em; font-size: 1em; background: #00ff99; border: none; color: #000; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #00cc77; }
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; text-align: center; padding: 2em; }
+    .box { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 2em; border-radius: 10px; }
+    button { margin: 1em; padding: 1em 2em; font-size: 1em; background: #00ff99; color: #000; border: none; border-radius: 5px; cursor: pointer; }
     select, input { padding: 0.5em; margin: 1em; }
+    ul { text-align: left; }
   </style>
 </head>
 <body>
-  <h1>🎉 Theek Hai Coin Lottery 🎉</h1>
-  <p>Play fair, win big — with TH COIN</p>
-  <div class="lottery-box">
-    <h2>Step 1: Connect Your Wallet</h2>
-    <button onclick="connectWallet()">Connect Phantom Wallet</button>
-    <h2>Step 2: Select Pool</h2>
+  <h1>🎉 TH COIN Lottery</h1>
+  <div class="box">
+    <p>Select pool size:</p>
     <select id="poolSize">
-      <option value="10">10 Players (Max win: 4x)</option>
-      <option value="100">100 Players (Max win: 5x)</option>
-      <option value="1000">1000 Players (Max win: 10x)</option>
+      <option value="10">10 players (4x jackpot)</option>
+      <option value="100">100 players (5x jackpot)</option>
+      <option value="1000">1000 players (10x jackpot)</option>
     </select>
-    <h2>Step 3: Pay Entry Fee</h2>
-    <button onclick="payEntry()">Pay $10 Worth of TH COIN</button>
+    <br>
+    <button onclick="simulateLottery()">Simulate Draw</button>
     <p id="status"></p>
+    <div id="results"></div>
   </div>
 
   <script>
-    const provider = window.phantom?.solana;
+    function simulateLottery() {
+      const poolSize = parseInt(document.getElementById("poolSize").value);
+      let entryAmount = 10;
+      let subsidyPerUser = 1;
+      let totalPool = (entryAmount + subsidyPerUser) * poolSize;
 
-    async function connectWallet() {
-      if (!provider || !provider.isPhantom) {
-        alert('Phantom Wallet not found. Please install it.');
-        return;
+      // Create fake player list
+      let players = Array.from({ length: poolSize }, (_, i) => ({ name: "Player " + (i + 1) }));
+
+      // Determine jackpot multiplier
+      const jackpots = { 10: 4, 100: 5, 1000: 10 };
+      const jackpotAmount = entryAmount * jackpots[poolSize];
+
+      let remaining = totalPool - jackpotAmount;
+
+      // Assign base $5 to everyone
+      players.forEach(p => p.reward = 5);
+      remaining -= 5 * poolSize;
+
+      // Add bonus to a few randomly chosen (after jackpot)
+      shuffle(players);
+      players[0].reward = jackpotAmount;
+
+      let idx = 1;
+      let bonuses = [20, 15, 10, 5];
+      for (let bonus of bonuses) {
+        if (remaining >= bonus && idx < players.length) {
+          players[idx].reward += bonus;
+          remaining -= bonus;
+          idx++;
+        }
       }
-      try {
-        const resp = await provider.connect();
-        document.getElementById("status").innerText = "✅ Wallet Connected: " + resp.publicKey.toString();
-      } catch (err) {
-        console.error(err);
-        document.getElementById("status").innerText = "❌ Connection failed.";
-      }
+
+      // Sort rewards descending
+      players.sort((a, b) => b.reward - a.reward);
+
+      // Display
+      let resultHTML = "<h3>🎯 Prize Results</h3><ul>";
+      players.forEach(p => {
+        resultHTML += `<li>${p.name} - <strong>$${p.reward.toFixed(2)}</strong></li>`;
+      });
+      resultHTML += "</ul>";
+      document.getElementById("results").innerHTML = resultHTML;
+      document.getElementById("status").innerText = "✅ Draw complete";
     }
 
-    async function payEntry() {
-      if (!provider || !provider.publicKey) {
-        alert("Please connect your wallet first.");
-        return;
-      }
-
-      const poolSize = document.getElementById("poolSize").value;
-      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
-      const sender = provider.publicKey;
-      const recipient = new solanaWeb3.PublicKey("Fe4XiVHYQtYeHxphKdi2umY5pfXCtCAU4W4PGeVVEyAa"); // Dev wallet placeholder
-      const lamports = 0.01 * solanaWeb3.LAMPORTS_PER_SOL;
-
-      const transaction = new solanaWeb3.Transaction().add(
-        solanaWeb3.SystemProgram.transfer({
-          fromPubkey: sender,
-          toPubkey: recipient,
-          lamports: lamports
-        })
-      );
-
-      transaction.feePayer = sender;
-      const { blockhash } = await connection.getRecentBlockhash();
-      transaction.recentBlockhash = blockhash;
-
-      try {
-        const signed = await provider.signTransaction(transaction);
-        const signature = await connection.sendRawTransaction(signed.serialize());
-        await connection.confirmTransaction(signature);
-        document.getElementById("status").innerText = `✅ Entry submitted for ${poolSize}-player pool. TX: ${signature}`;
-      } catch (error) {
-        console.error(error);
-        document.getElementById("status").innerText = "❌ Transaction failed.";
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
       }
     }
   </script>
