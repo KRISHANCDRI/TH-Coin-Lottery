@@ -1,12 +1,18 @@
-# TH COIN Lottery
+# Theek Hai Coin Lottery 🎉
 
-A simple Solana-based lottery page for TH COIN (Theek Hai Coin) with wallet connection.
+A fun Solana dApp using Theek Hai Coin where users can:
+- Connect Phantom Wallet
+- Swap SOL → TH COIN
+- Enter lottery
+- See live transactions & winnings
 
-## Features
-- Phantom wallet connect
-- Pool selection (10, 100, 1000)
-- Simulated entry fee using SOL (can be upgraded to TH COIN)
-- Built for Netlify/GitHub Pages hosting
+## 🚀 Live Site
+👉 [https://your-username.github.io/theek-hai-lottery/](https://your-username.github.io/theek-hai-lottery/)
 
-## Live Demo
-[Add Netlify or GitHub Pages link here after deployment]
+## Setup
+1. Clone this repo or upload files to GitHub
+2. Enable GitHub Pages
+3. Visit the published URL
+
+## Disclaimer
+This is a demo project. Not financial advice.

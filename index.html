@@ -1,84 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>TH COIN Lottery</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: Arial, sans-serif; background: #111; color: #fff; text-align: center; padding: 2em; }
-    .box { max-width: 600px; margin: 0 auto; background: #1e1e1e; padding: 2em; border-radius: 10px; }
-    button { margin: 1em; padding: 1em 2em; font-size: 1em; background: #00ff99; color: #000; border: none; border-radius: 5px; cursor: pointer; }
-    select, input { padding: 0.5em; margin: 1em; }
-    ul { text-align: left; }
-  </style>
+  <meta charset="UTF-8">
+  <title>Theek Hai Coin Lottery</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
 </head>
 <body>
-  <h1>🎉 TH COIN Lottery</h1>
-  <div class="box">
-    <p>Select pool size:</p>
-    <select id="poolSize">
-      <option value="10">10 players (4x jackpot)</option>
-      <option value="100">100 players (5x jackpot)</option>
-      <option value="1000">1000 players (10x jackpot)</option>
-    </select>
-    <br>
-    <button onclick="simulateLottery()">Simulate Draw</button>
-    <p id="status"></p>
-    <div id="results"></div>
+  <div class="container">
+    <h1>Theek Hai Coin Lottery</h1>
+    <p>Enter the lottery by swapping 0.1 SOL for Theek Hai Coin (TH COIN)</p>
+    <button id="connectBtn">Connect Wallet</button>
+    <button id="joinBtn" style="display:none;">Join Lottery</button>
+    <div id="wallet" class="wallet"></div>
+    <div id="status" class="info"></div>
   </div>
-
-  <script>
-    function simulateLottery() {
-      const poolSize = parseInt(document.getElementById("poolSize").value);
-      let entryAmount = 10;
-      let subsidyPerUser = 1;
-      let totalPool = (entryAmount + subsidyPerUser) * poolSize;
-
-      // Create fake player list
-      let players = Array.from({ length: poolSize }, (_, i) => ({ name: "Player " + (i + 1) }));
-
-      // Determine jackpot multiplier
-      const jackpots = { 10: 4, 100: 5, 1000: 10 };
-      const jackpotAmount = entryAmount * jackpots[poolSize];
-
-      let remaining = totalPool - jackpotAmount;
-
-      // Assign base $5 to everyone
-      players.forEach(p => p.reward = 5);
-      remaining -= 5 * poolSize;
-
-      // Add bonus to a few randomly chosen (after jackpot)
-      shuffle(players);
-      players[0].reward = jackpotAmount;
-
-      let idx = 1;
-      let bonuses = [20, 15, 10, 5];
-      for (let bonus of bonuses) {
-        if (remaining >= bonus && idx < players.length) {
-          players[idx].reward += bonus;
-          remaining -= bonus;
-          idx++;
-        }
-      }
-
-      // Sort rewards descending
-      players.sort((a, b) => b.reward - a.reward);
-
-      // Display
-      let resultHTML = "<h3>🎯 Prize Results</h3><ul>";
-      players.forEach(p => {
-        resultHTML += `<li>${p.name} - <strong>$${p.reward.toFixed(2)}</strong></li>`;
-      });
-      resultHTML += "</ul>";
-      document.getElementById("results").innerHTML = resultHTML;
-      document.getElementById("status").innerText = "✅ Draw complete";
-    }
-
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-  </script>
 </body>
 </html>
